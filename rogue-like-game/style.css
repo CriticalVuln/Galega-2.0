@@ -1,0 +1,21 @@
+/* Set full-height layout */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif; /* Keep font for potential UI text */
+    background-color: #000000; /* Black background for space */
+    color: #ecf0f1;
+    overflow: hidden; /* Prevent scrollbars */
+}
+
+canvas {
+    display: block;
+    width: 100%;   /* Full width of viewport */
+    height: 100%;  /* Full height of viewport */
+    background-color: #000; /* Ensure canvas background is black */
+}
