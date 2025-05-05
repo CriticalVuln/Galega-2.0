@@ -3,8 +3,9 @@ class InputHandler {
     constructor(gameEngine) {
         this.keys = [];
         this.mouseDown = false;  // track mouse click
-        this.click = null;  // track click position
+        this.click = null;  // track click position {x, y relative to viewport}
         this.gameEngine = gameEngine;
+        this.canvas = gameEngine.canvas; // Store canvas reference
 
         window.addEventListener('keydown', (e) => {
             const key = e.key.toLowerCase(); // Normalize key to lowercase
@@ -43,7 +44,12 @@ class InputHandler {
         // Mouse click for shooting
         window.addEventListener('mousedown', (e) => {
             this.mouseDown = true;
-            this.click = { x: e.clientX, y: e.clientY };
+            // Get click coordinates relative to the canvas
+            const rect = this.canvas.getBoundingClientRect();
+            this.click = { 
+                x: e.clientX - rect.left, 
+                y: e.clientY - rect.top 
+            };
         });
         window.addEventListener('mouseup', () => {
             this.mouseDown = false;

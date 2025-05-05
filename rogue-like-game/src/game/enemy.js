@@ -21,7 +21,9 @@ class Enemy {
         this.color = color;
         this.enemyBullets = enemyBulletsRef;
         this.state = ENEMY_STATE.ENTERING;
-        this.speed = 3; // Speed for entering/diving
+        this.speed = 180; // Speed in pixels per second (adjust as needed, was 3 * 60)
+        this.velocityX = 0; // Velocity in pixels per second
+        this.velocityY = 0; // Velocity in pixels per second
         this.canShoot = false; // Enemies shoot only during dives
         this.attackX = 0; // X-coordinate to dive to before shooting
         this.attackY = 0; // Y-coordinate to dive to before shooting
@@ -30,65 +32,80 @@ class Enemy {
     }
 
     update(deltaTime, gameWidth, gameHeight, playerX, playerY) {
-        const moveStep = this.speed * deltaTime * 60;
+        let dx, dy, distance;
+        let targetSpeedX = 0;
+        let targetSpeedY = 0;
 
         switch (this.state) {
             case ENEMY_STATE.ENTERING:
-                // Move towards target formation position
-                const dx = this.targetX - this.x;
-                const dy = this.targetY - this.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
+                dx = this.targetX - this.x;
+                dy = this.targetY - this.y;
+                distance = Math.sqrt(dx * dx + dy * dy);
+                const timeToTarget = distance / this.speed; // Estimated time
 
-                if (distance < moveStep) {
+                if (timeToTarget < deltaTime) { // If close enough to reach in this frame
                     this.x = this.targetX;
                     this.y = this.targetY;
+                    targetSpeedX = 0;
+                    targetSpeedY = 0;
                     this.state = ENEMY_STATE.IDLE;
                 } else {
-                    this.x += (dx / distance) * moveStep;
-                    this.y += (dy / distance) * moveStep;
+                    targetSpeedX = (dx / distance) * this.speed;
+                    targetSpeedY = (dy / distance) * this.speed;
                 }
                 break;
 
             case ENEMY_STATE.IDLE:
-                // Simple idle behavior (e.g., slight sine wave movement)
-                // this.x = this.targetX + Math.sin(performance.now() / 500 + this.targetX) * 5; // Example
+                targetSpeedX = 0;
+                targetSpeedY = 0;
                 break;
 
             case ENEMY_STATE.ATTACKING:
-                // Dive towards attack target
-                const dxAttack = this.attackX - this.x;
-                const dyAttack = this.attackY - this.y;
-                const distAttack = Math.sqrt(dxAttack * dxAttack + dyAttack * dyAttack);
-                if (distAttack < moveStep) {
+                dx = this.attackX - this.x;
+                dy = this.attackY - this.y;
+                distance = Math.sqrt(dx * dx + dy * dy);
+                const timeToAttackPos = distance / this.speed;
+
+                if (timeToAttackPos < deltaTime) {
                     if (this.canShoot) {
                         this.shoot();
                         this.canShoot = false;
                     }
+                    targetSpeedX = 0; 
+                    targetSpeedY = 0;
                     this.state = ENEMY_STATE.RETURNING;
                 } else {
-                    this.x += (dxAttack / distAttack) * moveStep;
-                    this.y += (dyAttack / distAttack) * moveStep;
+                    targetSpeedX = (dx / distance) * this.speed;
+                    targetSpeedY = (dy / distance) * this.speed;
                 }
                 break;
 
             case ENEMY_STATE.RETURNING:
-                // Fly back to formation
-                const dxReturning = this.targetX - this.x;
-                const dyReturning = this.targetY - this.y;
-                const distReturning = Math.sqrt(dxReturning * dxReturning + dyReturning * dyReturning);
-                if (distReturning < moveStep) {
+                dx = this.targetX - this.x;
+                dy = this.targetY - this.y;
+                distance = Math.sqrt(dx * dx + dy * dy);
+                const timeToReturnPos = distance / this.speed;
+
+                if (timeToReturnPos < deltaTime) {
                     this.x = this.targetX;
                     this.y = this.targetY;
+                    targetSpeedX = 0;
+                    targetSpeedY = 0;
                     this.state = ENEMY_STATE.IDLE;
                 } else {
-                    this.x += (dxReturning / distReturning) * moveStep;
-                    this.y += (dyReturning / distReturning) * moveStep;
+                    targetSpeedX = (dx / distance) * this.speed;
+                    targetSpeedY = (dy / distance) * this.speed;
                 }
                 break;
         }
+        
+        // Update velocity and position based on target speeds
+        this.velocityX = targetSpeedX;
+        this.velocityY = targetSpeedY;
+        this.x += this.velocityX * deltaTime;
+        this.y += this.velocityY * deltaTime;
     }
 
-    // Update startAttack to use player's last X position for horizontal dive target
     startAttack(playerX, gameHeight) {
         if (this.state === ENEMY_STATE.IDLE) {
             this.state = ENEMY_STATE.ATTACKING;
@@ -101,12 +118,32 @@ class Enemy {
     shoot() {
         const bulletX = this.x + this.width / 2 - 2;
         const bulletY = this.y + this.height;
-        this.enemyBullets.push(new Bullet(bulletX, bulletY, 5, 'red')); // Enemy bullets are now red
+        // Enemy bullet speed in pixels per second (e.g., 300)
+        this.enemyBullets.push(new Bullet(bulletX, bulletY, 300, 'red', 1, 0)); 
     }
 
     draw(context) {
+        // Draw UFO/flying saucer shape
+        const centerX = this.x + this.width / 2;
+        const centerY = this.y + this.height / 2;
+        
+        // Draw dome/upper part
+        context.fillStyle = 'silver';
+        context.beginPath();
+        context.ellipse(centerX, centerY - 2, this.width / 2, this.height / 3, 0, Math.PI, 0, false);
+        context.fill();
+        
+        // Draw saucer/lower part (wider)
         context.fillStyle = this.color;
-        context.fillRect(this.x, this.y, this.width, this.height);
+        context.beginPath();
+        context.ellipse(centerX, centerY + 1, this.width / 1.5, this.height / 4, 0, 0, Math.PI, false);
+        context.fill();
+        
+        // Draw cockpit/window
+        context.fillStyle = '#88ffff'; // Light blue glow
+        context.beginPath();
+        context.ellipse(centerX, centerY - 2, this.width / 4, this.height / 6, 0, 0, Math.PI * 2);
+        context.fill();
     }
 }
 

@@ -31,6 +31,10 @@ function drawCoins(context, coins) {
     coins.forEach(coin => coin.draw(context));
 }
 
+function drawTurrets(context, turrets) {
+    turrets.forEach(turret => turret.draw(context));
+}
+
 function drawUI(context, player, score) {
     context.fillStyle = 'white';
     context.font = '20px Arial';
@@ -48,18 +52,6 @@ function drawGameOver(context, canvas) {
     context.font = '20px Arial';
     context.fillText('Press R to Restart', canvas.width / 2, canvas.height / 2 + 40);
     context.textAlign = 'left'; // Reset alignment
-}
-
-function drawLevelComplete(context, canvas) {
-    context.fillStyle = 'rgba(0, 0, 0, 0.7)';
-    context.fillRect(0, 0, canvas.width, canvas.height);
-    context.fillStyle = 'red';
-    context.font = '50px Arial';
-    context.textAlign = 'center';
-    context.fillText('LEVEL COMPLETE', canvas.width / 2, canvas.height / 2);
-    context.font = '20px Arial';
-    context.fillText('Get ready for the next level...', canvas.width / 2, canvas.height / 2 + 40);
-    context.textAlign = 'left';
 }
 
 // Draw the main menu with Start and Upgrades buttons
@@ -120,44 +112,99 @@ function drawUpgrades(context, canvas, gold) {
     context.textAlign = 'left';
 }
 
-// Draw weapon selection: SMG (auto) vs Shotgun (buckshot)
-function drawWeaponSelect(context, canvas) {
+// Helper function to draw a rounded rectangle
+function drawRoundedRect(context, x, y, width, height, radius) {
+    context.beginPath();
+    context.moveTo(x + radius, y);
+    context.lineTo(x + width - radius, y);
+    context.quadraticCurveTo(x + width, y, x + width, y + radius);
+    context.lineTo(x + width, y + height - radius);
+    context.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+    context.lineTo(x + radius, y + height);
+    context.quadraticCurveTo(x, y + height, x, y + height - radius);
+    context.lineTo(x, y + radius);
+    context.quadraticCurveTo(x, y, x + radius, y);
+    context.closePath();
+}
+
+// Draw weapon/upgrade selection screen dynamically based on selected options
+function drawWeaponSelect(context, canvas, selectedOptions) {
+    if (!selectedOptions || selectedOptions.length === 0) return;
+
     const w = canvas.width, h = canvas.height;
-    const size = 100;
-    const spacing = 40;
-    const leftX = w / 2 - size - spacing / 2;
-    const rightX = w / 2 + spacing / 2;
-    const y = h / 2 - size / 2;
+    const boxWidth = 300; // Increased from 200
+    const boxHeight = 300; // Increased from 200
+    const spacing = 80;
+    const cornerRadius = 15;
+    const totalWidth = boxWidth * selectedOptions.length + spacing * (selectedOptions.length - 1);
+    const startX = w / 2 - totalWidth / 2;
+    const y = h / 2 - boxHeight / 2;
+
+    // Title text
+    context.fillStyle = 'white';
+    context.font = '28px Arial';
+    context.textAlign = 'center';
+    context.fillText('Choose Your Upgrade', w / 2, y - 40);
 
     // Semi-transparent overlay
     context.fillStyle = 'rgba(0,0,0,0.7)';
     context.fillRect(0, 0, w, h);
 
-    // Draw SMG option
-    context.fillStyle = 'black';
-    context.fillRect(leftX, y, size, size);
-    context.shadowColor = 'gray';
-    context.shadowBlur = 10;
-    context.strokeStyle = 'gray';
-    context.strokeRect(leftX, y, size, size);
-    context.shadowBlur = 0;
-    context.fillStyle = 'white';
-    context.font = '16px Arial';
-    context.textAlign = 'center';
-    context.fillText('SMG\n(auto)', leftX + size / 2, y + size / 2);
+    // Define glow colors based on rarity (example)
+    const rarityGlowColors = {
+        Common: '#aaaaaa', // Grey
+        Uncommon: '#33cc33', // Green
+        Rare: '#3399ff', // Blue
+        Legendary: '#ff9933' // Orange for Legendary
+    };
 
-    // Draw Shotgun option
-    context.fillStyle = 'black';
-    context.fillRect(rightX, y, size, size);
-    context.shadowColor = 'gray';
-    context.shadowBlur = 10;
-    context.strokeStyle = 'gray';
-    context.strokeRect(rightX, y, size, size);
-    context.shadowBlur = 0;
-    context.fillStyle = 'white';
-    context.fillText('Shotgun\n(click)', rightX + size / 2, y + size / 2);
+    // Draw each selected option (weapon or upgrade)
+    selectedOptions.forEach((option, index) => {
+        const currentX = startX + index * (boxWidth + spacing);
+        const glowColor = rarityGlowColors[option.rarity] || '#aaaaaa'; // Default to grey
 
-    context.textAlign = 'left';
+        // --- Draw Box with rounded corners and rarity glow ---
+        context.fillStyle = 'rgba(20, 20, 20, 0.8)';
+        drawRoundedRect(context, currentX, y, boxWidth, boxHeight, cornerRadius);
+        context.fill();
+
+        // Set up glow effect based on rarity
+        context.shadowColor = glowColor;
+        context.shadowBlur = 15;
+
+        // Draw the rounded outline with glow
+        context.lineWidth = 2;
+        context.strokeStyle = glowColor; // Match outline to glow
+        drawRoundedRect(context, currentX, y, boxWidth, boxHeight, cornerRadius);
+        context.stroke();
+
+        // Reset shadow effect
+        context.shadowBlur = 0;
+        context.shadowColor = 'transparent';
+
+        // --- Draw text inside the box ---
+        context.fillStyle = 'white';
+        context.font = '24px Arial';
+        context.textAlign = 'center';
+        // Add prefix for upgrades
+        const prefix = option.type === 'upgrade' ? 'Upgrade: ' : '';
+        context.fillText(prefix + option.name, currentX + boxWidth / 2, y + 40); // Name
+
+        context.font = '16px Arial'; // Smaller font for description
+        let textY = y + 75; // Starting Y for description lines
+        option.description.forEach(line => {
+            context.fillText(line, currentX + boxWidth / 2, textY);
+            textY += 22; // Move down for next line
+        });
+
+        // Optionally display rarity text
+        context.fillStyle = glowColor; // Use rarity color for text
+        context.font = '14px Arial';
+        context.fillText(`(${option.rarity})`, currentX + boxWidth / 2, y + boxHeight - 20);
+
+    });
+
+    context.textAlign = 'left'; // Reset alignment
 }
 
 export function renderGame(context, canvas, gameState) {
@@ -173,9 +220,9 @@ export function renderGame(context, canvas, gameState) {
         drawUpgrades(context, canvas, gameState.totalGold);
         return;
     }
-    // Weapon selection screen after level 1
-    if (gameState.isWeaponSelect) {
-        drawWeaponSelect(context, canvas);
+    // Weapon/Upgrade selection screen - pass the selected options
+    if (gameState.isWeaponSelect && gameState.selectedOptions) {
+        drawWeaponSelect(context, canvas, gameState.selectedOptions);
         return;
     }
 
@@ -193,6 +240,12 @@ export function renderGame(context, canvas, gameState) {
     if (gameState.enemyBullets) {
         drawBullets(context, gameState.enemyBullets);
     }
+    if (gameState.turrets) {
+        drawTurrets(context, gameState.turrets);
+    }
+    if (gameState.turretBullets) {
+        drawBullets(context, gameState.turretBullets);
+    }
     if (gameState.coins) {
         drawCoins(context, gameState.coins); // draw dropped coins
     }
@@ -204,12 +257,6 @@ export function renderGame(context, canvas, gameState) {
         context.fillStyle = 'yellow';
         context.font = '20px Arial';
         context.fillText(`Gold: ${gameState.totalGold}`, 10, 55);
-    }
-
-    // Level Complete overlay
-    if (gameState.isLevelComplete) {
-        drawLevelComplete(context, canvas);
-        return; // Skip Game Over
     }
 
     // Draw Game Over screen if applicable
