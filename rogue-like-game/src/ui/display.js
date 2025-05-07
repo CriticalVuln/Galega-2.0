@@ -54,61 +54,206 @@ function drawGameOver(context, canvas) {
     context.textAlign = 'left'; // Reset alignment
 }
 
-// Draw the main menu with Start and Upgrades buttons
+// Draw the main menu with Start and Upgrades buttons - Cyberpunk Space Theme
 function drawMenu(context, canvas) {
     const w = canvas.width, h = canvas.height;
-    const btnW = 200, btnH = 40;
-    const startX = w / 2 - btnW / 2, startY = h / 2 - 30;
-    const upgX = startX, upgY = h / 2 + 10;
+    const btnW = 220, btnH = 50;
+    const startX = w / 2 - btnW / 2, startY = h / 2 - 20;
+    const upgX = startX, upgY = h / 2 + 50;
 
-    context.fillStyle = 'black';
+    // Background with gradient
+    const bgGradient = context.createLinearGradient(0, 0, 0, h);
+    bgGradient.addColorStop(0, '#000020'); // Deep space blue at top
+    bgGradient.addColorStop(1, '#120038'); // Dark purple at bottom
+    context.fillStyle = bgGradient;
     context.fillRect(0, 0, w, h);
 
-    context.fillStyle = 'white';
-    context.font = '30px Arial';
+    // Draw digital grid lines for cyberpunk feel
+    context.strokeStyle = 'rgba(0, 255, 255, 0.1)'; // Cyan with low opacity
+    context.lineWidth = 1;
+    
+    // Horizontal grid lines
+    for (let y = 0; y < h; y += 40) {
+        context.beginPath();
+        context.moveTo(0, y);
+        context.lineTo(w, y);
+        context.stroke();
+    }
+    
+    // Vertical grid lines
+    for (let x = 0; x < w; x += 40) {
+        context.beginPath();
+        context.moveTo(x, 0);
+        context.lineTo(x, h);
+        context.stroke();
+    }
+
+    // Create title glow effect
+    context.shadowBlur = 20;
+    context.shadowColor = '#00ffff';
+    context.fillStyle = '#ffffff';
+    context.font = 'bold 48px "Arial", sans-serif';
     context.textAlign = 'center';
-    context.fillText('GALAGA-STYLE GAME', w / 2, h / 2 - 80);
+    context.fillText('GALACTIC ROGUE', w / 2, h / 3);
+    
+    // Subtitle with different color
+    context.shadowColor = '#ff00ff';
+    context.fillStyle = '#ff9cee';
+    context.font = '24px "Arial", sans-serif';
+    context.fillText('SPACE DEFENDER', w / 2, h / 3 + 40);
+    
+    // Reset shadow for buttons
+    context.shadowBlur = 0;
+    
+    // Draw neon glowing buttons
+    function drawNeonButton(x, y, width, height, text, primaryColor, glowColor) {
+        // Button background
+        const btnGradient = context.createLinearGradient(x, y, x, y + height);
+        btnGradient.addColorStop(0, 'rgba(20, 20, 40, 0.9)');
+        btnGradient.addColorStop(1, 'rgba(40, 40, 80, 0.9)');
+        context.fillStyle = btnGradient;
+        
+        // Draw rounded button rectangle
+        drawRoundedRect(context, x, y, width, height, 10);
+        context.fill();
+        
+        // Neon border glow effect
+        context.shadowBlur = 15;
+        context.shadowColor = glowColor;
+        context.strokeStyle = primaryColor;
+        context.lineWidth = 2;
+        drawRoundedRect(context, x, y, width, height, 10);
+        context.stroke();
+        
+        // Button text
+        context.shadowBlur = 5;
+        context.fillStyle = 'white';
+        context.font = 'bold 20px "Arial", sans-serif';
+        context.textAlign = 'center';
+        context.fillText(text, x + width / 2, y + height / 2 + 7);
+    }
 
-    // Start button
-    context.fillStyle = 'gray';
-    context.fillRect(startX, startY, btnW, btnH);
-    context.fillStyle = 'white';
-    context.font = '20px Arial';
-    context.fillText('Start', w / 2, startY + btnH / 2 + 7);
-
-    // Upgrades button
-    context.fillStyle = 'gray';
-    context.fillRect(upgX, upgY, btnW, btnH);
-    context.fillStyle = 'white';
-    context.fillText('Upgrades', w / 2, upgY + btnH / 2 + 7);
-
+    // Start button - cyan glow
+    drawNeonButton(startX, startY, btnW, btnH, 'START MISSION', '#0ff', 'rgba(0, 255, 255, 0.8)');
+    
+    // Upgrades button - purple glow
+    drawNeonButton(upgX, upgY, btnW, btnH, 'UPGRADES', '#f0f', 'rgba(255, 0, 255, 0.8)');
+    
+    // Reset shadow and text alignment
+    context.shadowBlur = 0;
     context.textAlign = 'left';
 }
 
-// Draw the upgrades screen with a Back button
+// Draw the upgrades screen with a Back button - Cyberpunk Space Theme
 function drawUpgrades(context, canvas, gold) {
     const w = canvas.width, h = canvas.height;
-    const btnW = 200, btnH = 40;
-    const backX = w / 2 - btnW / 2, backY = h / 2 + 50;
+    const btnW = 220, btnH = 50;
+    const backX = w / 2 - btnW / 2, backY = h / 2 + 100;
 
-    context.fillStyle = 'black';
+    // Background with gradient - same as main menu
+    const bgGradient = context.createLinearGradient(0, 0, 0, h);
+    bgGradient.addColorStop(0, '#000020');
+    bgGradient.addColorStop(1, '#120038');
+    context.fillStyle = bgGradient;
     context.fillRect(0, 0, w, h);
 
-    context.fillStyle = 'white';
-    context.font = '30px Arial';
+    // Grid lines
+    context.strokeStyle = 'rgba(0, 255, 255, 0.1)';
+    context.lineWidth = 1;
+    
+    // Horizontal grid lines
+    for (let y = 0; y < h; y += 40) {
+        context.beginPath();
+        context.moveTo(0, y);
+        context.lineTo(w, y);
+        context.stroke();
+    }
+    
+    // Vertical grid lines
+    for (let x = 0; x < w; x += 40) {
+        context.beginPath();
+        context.moveTo(x, 0);
+        context.lineTo(x, h);
+        context.stroke();
+    }
+
+    // Upgrades title with glow effect
+    context.shadowBlur = 20;
+    context.shadowColor = '#ff00ff'; // Purple glow
+    context.fillStyle = '#ffffff';
+    context.font = 'bold 48px "Arial", sans-serif';
     context.textAlign = 'center';
-    context.fillText('Upgrades', w / 2, h / 2 - 80);
+    context.fillText('UPGRADES', w / 2, h / 3 - 40);
 
-    // Display current gold
-    context.font = '20px Arial';
-    context.fillText(`Gold: ${gold}`, w / 2, h / 2 - 30);
-
-    // Back button
-    context.fillStyle = 'gray';
-    context.fillRect(backX, backY, btnW, btnH);
-    context.fillStyle = 'white';
-    context.fillText('Back', w / 2, backY + btnH / 2 + 7);
-
+    // Gold display with cyber styling
+    context.shadowColor = '#ffff00'; // Yellow glow for gold
+    context.fillStyle = '#ffdd33';
+    context.font = '28px "Arial", sans-serif';
+    
+    // Gold container box
+    const goldBoxWidth = 200;
+    const goldBoxHeight = 50;
+    const goldBoxX = w / 2 - goldBoxWidth / 2;
+    const goldBoxY = h / 3;
+    
+    // Draw gold box with neon effect
+    context.shadowBlur = 10;
+    context.strokeStyle = '#ffaa00';
+    context.lineWidth = 2;
+    drawRoundedRect(context, goldBoxX, goldBoxY, goldBoxWidth, goldBoxHeight, 10);
+    context.stroke();
+    
+    context.fillStyle = 'rgba(40, 40, 10, 0.7)';
+    drawRoundedRect(context, goldBoxX, goldBoxY, goldBoxWidth, goldBoxHeight, 10);
+    context.fill();
+    
+    // Gold text
+    context.shadowBlur = 5;
+    context.fillStyle = '#ffdd33';
+    context.fillText(`GOLD: ${gold}`, w / 2, goldBoxY + goldBoxHeight/2 + 10);
+    
+    // Placeholder for future upgrades
+    context.shadowBlur = 5;
+    context.shadowColor = '#00ffff';
+    context.fillStyle = 'rgba(255, 255, 255, 0.7)';
+    context.font = '20px "Arial", sans-serif';
+    context.fillText('AVAILABLE UPGRADES COMING SOON', w / 2, h / 2);
+    
+    // Back button with neon styling
+    // Reuse the drawNeonButton function defined in drawMenu if it's in scope
+    // If not, define it inline:
+    function drawNeonButton(x, y, width, height, text, primaryColor, glowColor) {
+        // Button background
+        const btnGradient = context.createLinearGradient(x, y, x, y + height);
+        btnGradient.addColorStop(0, 'rgba(20, 20, 40, 0.9)');
+        btnGradient.addColorStop(1, 'rgba(40, 40, 80, 0.9)');
+        context.fillStyle = btnGradient;
+        
+        // Draw rounded button
+        drawRoundedRect(context, x, y, width, height, 10);
+        context.fill();
+        
+        // Neon border
+        context.shadowBlur = 15;
+        context.shadowColor = glowColor;
+        context.strokeStyle = primaryColor;
+        context.lineWidth = 2;
+        drawRoundedRect(context, x, y, width, height, 10);
+        context.stroke();
+        
+        // Button text
+        context.shadowBlur = 5;
+        context.fillStyle = 'white';
+        context.font = 'bold 20px "Arial", sans-serif';
+        context.textAlign = 'center';
+        context.fillText(text, x + width / 2, y + height / 2 + 7);
+    }
+    
+    // Back button with blue glow
+    drawNeonButton(backX, backY, btnW, btnH, 'RETURN', '#0099ff', 'rgba(0, 153, 255, 0.8)');
+    
+    // Reset shadow and alignment
+    context.shadowBlur = 0;
     context.textAlign = 'left';
 }
 
@@ -127,84 +272,97 @@ function drawRoundedRect(context, x, y, width, height, radius) {
     context.closePath();
 }
 
-// Draw weapon/upgrade selection screen dynamically based on selected options
+// Draw weapon/upgrade selection screen dynamically based on selected options - Full Cyberpunk Theme
 function drawWeaponSelect(context, canvas, selectedOptions) {
     if (!selectedOptions || selectedOptions.length === 0) return;
 
     const w = canvas.width, h = canvas.height;
-    const boxWidth = 300; // Increased from 200
-    const boxHeight = 300; // Increased from 200
+    const boxWidth = 300; 
+    const boxHeight = 300; 
     const spacing = 80;
     const cornerRadius = 15;
     const totalWidth = boxWidth * selectedOptions.length + spacing * (selectedOptions.length - 1);
     const startX = w / 2 - totalWidth / 2;
-    const y = h / 2 - boxHeight / 2;
+    const yPos = h / 2 - boxHeight / 2;
 
-    // Title text
-    context.fillStyle = 'white';
-    context.font = '28px Arial';
-    context.textAlign = 'center';
-    context.fillText('Choose Your Upgrade', w / 2, y - 40);
-
-    // Semi-transparent overlay
-    context.fillStyle = 'rgba(0,0,0,0.7)';
+    // Background with gradient
+    const bgGradient = context.createLinearGradient(0, 0, 0, h);
+    bgGradient.addColorStop(0, 'rgba(0, 0, 32, 0.8)'); 
+    bgGradient.addColorStop(1, 'rgba(18, 0, 56, 0.8)');
+    context.fillStyle = bgGradient;
     context.fillRect(0, 0, w, h);
+    
+    // Draw digital grid lines
+    context.strokeStyle = 'rgba(0, 255, 255, 0.05)'; 
+    context.lineWidth = 1;
+    for (let gridY = 0; gridY < h; gridY += 40) {
+        context.beginPath(); context.moveTo(0, gridY); context.lineTo(w, gridY); context.stroke();
+    }
+    for (let gridX = 0; gridX < w; gridX += 40) {
+        context.beginPath(); context.moveTo(gridX, 0); context.lineTo(gridX, h); context.stroke();
+    }
 
-    // Define glow colors based on rarity (example)
+    // Title text with cyberpunk glow effect
+    context.shadowBlur = 20;
+    context.shadowColor = '#00ffff'; 
+    context.fillStyle = '#ffffff';
+    context.font = 'bold 36px Arial, sans-serif';
+    context.textAlign = 'center';
+    context.fillText('CHOOSE YOUR UPGRADE', w / 2, yPos - 40); 
+    context.shadowBlur = 0; 
+
     const rarityGlowColors = {
-        Common: '#aaaaaa', // Grey
-        Uncommon: '#33cc33', // Green
-        Rare: '#3399ff', // Blue
-        Legendary: '#ff9933' // Orange for Legendary
+        Common: '#aaaaaa',    
+        Uncommon: '#33cc33',  
+        Rare: '#3399ff',      
+        Legendary: '#ff9933' 
     };
 
-    // Draw each selected option (weapon or upgrade)
     selectedOptions.forEach((option, index) => {
         const currentX = startX + index * (boxWidth + spacing);
-        const glowColor = rarityGlowColors[option.rarity] || '#aaaaaa'; // Default to grey
-
-        // --- Draw Box with rounded corners and rarity glow ---
-        context.fillStyle = 'rgba(20, 20, 20, 0.8)';
-        drawRoundedRect(context, currentX, y, boxWidth, boxHeight, cornerRadius);
+        const glowColor = rarityGlowColors[option.rarity] || '#aaaaaa'; 
+        
+        // Set fill style for the box to an opaque dark color
+        context.fillStyle = 'rgb(10, 20, 30)'; // Changed from rgba(10, 20, 30, 0.85)
+        drawRoundedRect(context, currentX, yPos, boxWidth, boxHeight, cornerRadius);
         context.fill();
 
-        // Set up glow effect based on rarity
-        context.shadowColor = glowColor;
         context.shadowBlur = 15;
-
-        // Draw the rounded outline with glow
+        context.shadowColor = glowColor;
+        context.strokeStyle = glowColor;
         context.lineWidth = 2;
-        context.strokeStyle = glowColor; // Match outline to glow
-        drawRoundedRect(context, currentX, y, boxWidth, boxHeight, cornerRadius);
+        drawRoundedRect(context, currentX, yPos, boxWidth, boxHeight, cornerRadius);
         context.stroke();
+        
+        context.shadowBlur = 0; 
 
-        // Reset shadow effect
-        context.shadowBlur = 0;
-        context.shadowColor = 'transparent';
-
-        // --- Draw text inside the box ---
-        context.fillStyle = 'white';
-        context.font = '24px Arial';
         context.textAlign = 'center';
-        // Add prefix for upgrades
-        const prefix = option.type === 'upgrade' ? 'Upgrade: ' : '';
-        context.fillText(prefix + option.name, currentX + boxWidth / 2, y + 40); // Name
+        
+        context.shadowBlur = 10;
+        context.shadowColor = glowColor;
+        context.fillStyle = 'white';
+        context.font = 'bold 24px Arial, sans-serif';
+        const prefix = option.type === 'upgrade' ? 'UPGRADE: ' : ''; 
+        context.fillText(prefix + option.name.toUpperCase(), currentX + boxWidth / 2, yPos + 50); 
 
-        context.font = '16px Arial'; // Smaller font for description
-        let textY = y + 75; // Starting Y for description lines
+        context.shadowBlur = 0;
+        context.fillStyle = 'rgba(200, 220, 255, 0.9)'; 
+        context.font = '16px Arial, sans-serif';
+        let textY = yPos + 90; 
         option.description.forEach(line => {
             context.fillText(line, currentX + boxWidth / 2, textY);
-            textY += 22; // Move down for next line
+            textY += 22; 
         });
 
-        // Optionally display rarity text
-        context.fillStyle = glowColor; // Use rarity color for text
-        context.font = '14px Arial';
-        context.fillText(`(${option.rarity})`, currentX + boxWidth / 2, y + boxHeight - 20);
-
+        context.fillStyle = glowColor;
+        context.shadowBlur = 5;
+        context.shadowColor = glowColor;
+        context.font = 'bold 16px Arial, sans-serif';
+        context.fillText(`[${option.rarity.toUpperCase()}]`, currentX + boxWidth / 2, yPos + boxHeight - 30); 
     });
 
-    context.textAlign = 'left'; // Reset alignment
+    context.textAlign = 'left'; 
+    context.shadowBlur = 0; 
 }
 
 export function renderGame(context, canvas, gameState) {
@@ -259,8 +417,8 @@ export function renderGame(context, canvas, gameState) {
         context.fillText(`Gold: ${gameState.totalGold}`, 10, 55);
     }
 
-    // Draw Game Over screen if applicable
-    if (gameState.isGameOver) {
-        drawGameOver(context, canvas);
+        // Draw Game Over screen if applicable
+        if (gameState.isGameOver) {
+            drawGameOver(context, canvas);
+        }
     }
-}

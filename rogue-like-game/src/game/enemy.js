@@ -123,27 +123,31 @@ class Enemy {
     }
 
     draw(context) {
-        // Draw UFO/flying saucer shape
-        const centerX = this.x + this.width / 2;
-        const centerY = this.y + this.height / 2;
-        
-        // Draw dome/upper part
-        context.fillStyle = 'silver';
-        context.beginPath();
-        context.ellipse(centerX, centerY - 2, this.width / 2, this.height / 3, 0, Math.PI, 0, false);
-        context.fill();
-        
-        // Draw saucer/lower part (wider)
-        context.fillStyle = this.color;
-        context.beginPath();
-        context.ellipse(centerX, centerY + 1, this.width / 1.5, this.height / 4, 0, 0, Math.PI, false);
-        context.fill();
-        
-        // Draw cockpit/window
-        context.fillStyle = '#88ffff'; // Light blue glow
-        context.beginPath();
-        context.ellipse(centerX, centerY - 2, this.width / 4, this.height / 6, 0, 0, Math.PI * 2);
-        context.fill();
+        // Pixel art style for the enemy UFO
+        const pixelSize = 4; // Define the size of each "pixel" for the UFO
+        // UFO shape: A simple saucer with a dome
+
+        context.imageSmoothingEnabled = false;
+
+        // Saucer base (wider part)
+        context.fillStyle = this.color; // Use existing enemy color (purple or turquoise)
+        // Row 1 (bottom of saucer)
+        context.fillRect(this.x + 1 * pixelSize, this.y + 3 * pixelSize, pixelSize * 6, pixelSize);
+        // Row 2
+        context.fillRect(this.x, this.y + 2 * pixelSize, pixelSize * 8, pixelSize);
+        // Row 3 (widest part of saucer)
+        context.fillRect(this.x, this.y + 1 * pixelSize, pixelSize * 8, pixelSize);
+
+        // Dome (upper part)
+        context.fillStyle = 'silver'; // Silver or grey for the dome
+        // Row 1 of dome
+        context.fillRect(this.x + 2 * pixelSize, this.y, pixelSize * 4, pixelSize);
+        // Row 2 of dome (slightly wider)
+        context.fillRect(this.x + 1 * pixelSize, this.y - 1 * pixelSize, pixelSize * 6, pixelSize);
+
+        // Cockpit/Window (optional)
+        context.fillStyle = '#88FFFF'; // Light blue, similar to original
+        context.fillRect(this.x + 3 * pixelSize, this.y - 0 * pixelSize, pixelSize * 2, pixelSize);
     }
 }
 

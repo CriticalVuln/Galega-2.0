@@ -147,35 +147,34 @@ class Player {
     }
 
     draw(context) {
-        // Draw a Star Wars style spaceship
-        const centerX = this.x + this.width / 2;
-        const centerY = this.y + this.height / 2;
+        // Pixel art style for the player ship
+        const pixelSize = 5; // Define the size of each "pixel"
+        const shipWidthPixels = 6; // Width of the ship in "pixels"
+        const shipHeightPixels = 6; // Height of the ship in "pixels"
+
+        // Ensure drawing is sharp for pixel art
+        context.imageSmoothingEnabled = false;
+
+        // Ship body (example: a simple T-shape or arrow)
+        // Main body color
+        context.fillStyle = '#00FF00'; // Bright green
+
+        // Central column
+        for (let i = 0; i < 4; i++) {
+            context.fillRect(this.x + 2 * pixelSize, this.y + i * pixelSize, pixelSize * 2, pixelSize);
+        }
+
+        // Wings
+        context.fillRect(this.x, this.y + 2 * pixelSize, pixelSize * 6, pixelSize);
         
-        // Main body - elongated shape
-        context.fillStyle = '#777777'; // Light gray for ship body
-        context.beginPath();
-        context.moveTo(centerX, this.y); // Front/nose of ship
-        context.lineTo(centerX - this.width / 2, centerY + this.height / 3); // Left wing
-        context.lineTo(centerX - this.width / 3, this.y + this.height); // Left back
-        context.lineTo(centerX + this.width / 3, this.y + this.height); // Right back
-        context.lineTo(centerX + this.width / 2, centerY + this.height / 3); // Right wing
-        context.closePath();
-        context.fill();
-        
-        // Cockpit section
-        context.fillStyle = '#3399ff'; // Blue glow for cockpit
-        context.beginPath();
-        context.ellipse(centerX, centerY - this.height / 5, this.width / 4, this.height / 6, 0, 0, Math.PI * 2);
-        context.fill();
-        
-        // Engine glow
-        context.fillStyle = '#ff9933'; // Orange engine glow
-        context.beginPath();
-        context.moveTo(centerX - this.width / 4, this.y + this.height);
-        context.lineTo(centerX + this.width / 4, this.y + this.height);
-        context.lineTo(centerX, this.y + this.height + 5);
-        context.closePath();
-        context.fill();
+        // Cockpit (optional, simple version)
+        context.fillStyle = '#FFFFFF'; // White cockpit
+        context.fillRect(this.x + 2 * pixelSize, this.y + 1 * pixelSize, pixelSize * 2, pixelSize);
+
+        // Engine (optional)
+        context.fillStyle = '#FF0000'; // Red engine
+        context.fillRect(this.x + 2 * pixelSize, this.y + 4 * pixelSize, pixelSize * 2, pixelSize);
+
 
         // Draw bullets
         this.bullets.forEach(bullet => bullet.draw(context));

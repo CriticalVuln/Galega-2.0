@@ -322,20 +322,26 @@ class GameEngine {
         if (this.gameState === GAME_STATE.MENU) {
             const click = this.inputHandler.click;
             if (click) {
-                const w = this.gameWidth,
-                      h = this.gameHeight;
-                const btnW = 200, btnH = 40;
-                const startX = w / 2 - btnW / 2, startY = h / 2 - 30;
-                const upgX = startX, upgY = h / 2 + 10;
+                const w = this.gameWidth;
+                const h = this.gameHeight;
+                const btnW = 220; // Matches drawMenu in display.js
+                const btnH = 50;  // Matches drawMenu in display.js
+                const startButtonX = w / 2 - btnW / 2;
+                const startButtonY = h / 2 - 20; // Matches drawMenu for Start button
+                const upgradesButtonX = startButtonX; // Same X as Start button
+                const upgradesButtonY = h / 2 + 50; // Matches drawMenu for Upgrades button
+
                 // Start button
-                if (click.x >= startX && click.x <= startX + btnW && click.y >= startY && click.y <= startY + btnH) {
-                    this.resetGame();
+                if (click.x >= startButtonX && click.x <= startButtonX + btnW &&
+                    click.y >= startButtonY && click.y <= startButtonY + btnH) {
+                    this.resetGame(); // Should start the game
                 }
                 // Upgrades button
-                if (click.x >= upgX && click.x <= upgX + btnW && click.y >= upgY && click.y <= upgY + btnH) {
-                    this.gameState = GAME_STATE.UPGRADES;
+                else if (click.x >= upgradesButtonX && click.x <= upgradesButtonX + btnW &&
+                         click.y >= upgradesButtonY && click.y <= upgradesButtonY + btnH) {
+                    this.gameState = GAME_STATE.UPGRADES; // Should go to upgrades screen
                 }
-                this.inputHandler.click = null;
+                this.inputHandler.click = null; // Consume the click
             }
             return;
         }
@@ -343,14 +349,18 @@ class GameEngine {
         if (this.gameState === GAME_STATE.UPGRADES) {
             const click = this.inputHandler.click;
             if (click) {
-                // Back button area
-                const w = this.gameWidth, h = this.gameHeight;
-                const btnW = 200, btnH = 40;
-                const backX = w / 2 - btnW / 2, backY = h / 2 + 50;
-                if (click.x >= backX && click.x <= backX + btnW && click.y >= backY && click.y <= backY + btnH) {
+                const w = this.gameWidth;
+                const h = this.gameHeight;
+                const btnW = 220; // Matches drawUpgrades in display.js
+                const btnH = 50;  // Matches drawUpgrades in display.js
+                const backButtonX = w / 2 - btnW / 2;
+                const backButtonY = h / 2 + 100; // Matches drawUpgrades for Back button
+
+                if (click.x >= backButtonX && click.x <= backButtonX + btnW &&
+                    click.y >= backButtonY && click.y <= backButtonY + btnH) {
                     this.gameState = GAME_STATE.MENU;
                 }
-                this.inputHandler.click = null;
+                this.inputHandler.click = null; // Consume the click
             }
             return;
         }
@@ -359,19 +369,19 @@ class GameEngine {
             const click = this.inputHandler.click;
             if (click && this.selectedOptions.length > 0) { 
                 const w = this.gameWidth, h = this.gameHeight;
-                const boxWidth = 200; 
-                const boxHeight = 200; 
-                const spacing = 80; 
+                const boxWidth = 300; // Matches drawWeaponSelect
+                const boxHeight = 300; // Matches drawWeaponSelect
+                const spacing = 80; // Matches drawWeaponSelect
                 const totalWidth = boxWidth * this.selectedOptions.length + spacing * (this.selectedOptions.length - 1);
                 const startX = w / 2 - totalWidth / 2;
-                const y = h / 2 - boxHeight / 2;
+                const yPos = h / 2 - boxHeight / 2; // Matches yPos in drawWeaponSelect
                 let optionSelected = false;
 
                 for (let i = 0; i < this.selectedOptions.length; i++) {
                     const option = this.selectedOptions[i];
                     const currentX = startX + i * (boxWidth + spacing); 
 
-                    if (click.x >= currentX && click.x <= currentX + boxWidth && click.y >= y && click.y <= y + boxHeight) {
+                    if (click.x >= currentX && click.x <= currentX + boxWidth && click.y >= yPos && click.y <= yPos + boxHeight) {
                         if (option.type === 'upgrade') {
                             // Apply the upgrade to the current weapon
                             this.applyUpgrade(option);
